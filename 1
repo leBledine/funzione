@@ -1,0 +1,147 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <float.h>
+#include <math.h>
+#define TRUE 1
+#define FALSE 0
+typedef unsigned short int boolean;
+
+struct list{
+    float value;
+    struct list * next_ptr;
+};
+
+
+
+boolean isEqual(float a, float b);
+void init(struct list ** ptr);
+void pre_insert(struct list ** ptr, float value);
+void visit_r(struct list * ptr);
+struct list ** funzione(struct list **ptr, float target, int *nelementi);
+void visit_array ( struct list ** V, int nelementi);
+
+int main (){
+    
+    struct list * ptr;
+    init (&ptr);
+    int elementilista;
+    elementilista=0;
+    float value;
+    struct list ** V;
+    int nelementi=0;
+    int a;
+    
+    float target;
+    // definisco valore target
+    printf("\nInserire il  valore target: ");
+    scanf("%f", &target);
+    
+    // definisco lunghezza array
+    printf("\nQuanti elementi deve avere la lista? ");
+    scanf("%d", &elementilista);
+    
+    
+    
+    for(a=0; a<elementilista; a++) {
+        
+        printf("\nDigitare valore da inserire nella lista: ");
+        scanf("%f", &value);
+        pre_insert(&ptr, value);
+        }
+    
+    printf("L'inserimento e' avvenuto correttamente, la lista è la seguente: \n");
+    visit_r(ptr);
+    V = funzione(&ptr,target,&nelementi);
+    printf("\nQuesti sono gli indirizzi degli elementi duplicati: \n");
+    visit_array (V,nelementi);
+    printf("\nQuesta è la lista finale: \n");
+    visit_r(ptr);
+    
+    
+    printf("\nIl programma è stato eseguito correttamente \n");
+    
+}
+
+
+struct list ** funzione (struct list ** ptr, float target, int *nelementi){
+    
+    struct list * tmp;
+    struct list ** V;
+    int xall=0;
+    int size=0;
+    struct list *pos = (*ptr);
+    while(*ptr!=NULL){
+        if(isEqual(target, (*ptr)->value))
+            size++;
+        *ptr=(*ptr)->next_ptr;
+    }
+    
+    (*nelementi)= size;
+    
+    (*ptr)=pos;
+    V=(struct list**)malloc(sizeof(struct list)*size);
+    
+    while ( *ptr != NULL){
+        if (isEqual(target, (*ptr)->value)){
+            
+            tmp=(struct list*)malloc(sizeof(struct list));
+            tmp->value=target;
+            tmp->next_ptr=(*ptr)->next_ptr;
+            (*ptr)->next_ptr=tmp;
+            V[xall]=tmp;
+            ptr=&((*ptr)->next_ptr->next_ptr);
+            xall++;
+        }
+        else
+            ptr=&((*ptr)->next_ptr);
+    }
+    return V;
+}
+
+
+
+
+void init(struct list ** ptr){
+    *ptr = NULL;
+}
+
+
+void visit_r(struct list * ptr)
+{
+    if ( ptr != NULL ) {
+        printf("%f", ptr->value);
+        printf(" , ");
+        visit_r(ptr->next_ptr);
+    }
+}
+
+boolean isEqual(float a, float b){
+    float diff,max;
+    diff=fabs(a-b);
+    a=fabs(a);
+    b=fabs(b);
+    max=(a>b)?a : b;
+    if(diff<=FLT_EPSILON*max){
+        return TRUE;
+    }
+    else
+        return FALSE;
+}
+
+
+void pre_insert(struct list ** ptr, float value){
+    struct list * tmp;
+    tmp =(struct list*)malloc(sizeof(struct list));
+    tmp->value=value;
+    tmp->next_ptr=*ptr;
+    *ptr=tmp;
+    }
+
+void visit_array (struct list ** V, int nelementi){
+    
+    int i;
+    for (i=0;i<nelementi;i++){
+        printf ("%p", V[i]);
+        printf (" , ");
+    }
+}
